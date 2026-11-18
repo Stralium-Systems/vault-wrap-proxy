@@ -19,6 +19,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # Built locally by Compose; there is no upstream image to update.
+      - dependency-name: "vault-wrap-proxy"
   - package-ecosystem: github-actions
     directory: /
     schedule:
