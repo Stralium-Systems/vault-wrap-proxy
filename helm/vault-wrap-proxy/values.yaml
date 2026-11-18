@@ -1,0 +1,111 @@
+# =============================================================================
+# Vault Wrap Proxy - Helm Values
+# =============================================================================
+#
+# Configuration pour le déploiement Kubernetes du proxy.
+# Adaptez ces valeurs à votre environnement.
+#
+# Usage:
+#   helm upgrade --install vault-wrap-proxy ./helm/vault-wrap-proxy \
+#     --namespace vault-wrap-proxy \
+#     --create-namespace \
+#     --set vault.address="https://vault.internal:8200" \
+#     --set vault.role="vault-wrap-proxy"
+# =============================================================================
+
+replicaCount: 2
+
+app:
+  # Interface and user-facing errors: en (default), fr, or es.
+  language: en
+
+image:
+  # Image à construire et pousser dans votre registry
+  repository: vault-wrap-proxy
+  tag: "1.0.0"
+  # Digest de votre image publiée, prioritaire sur le tag si renseigné.
+  digest: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+serviceAccount:
+  # Le ServiceAccount doit correspondre à celui configuré dans Vault
+  create: true
+  name: vault-wrap-proxy
+
+vault:
+  # URL du serveur Vault (HTTPS requis en production)
+  address: "https://vault.example.com:8200"
+  
+  # Rôle Kubernetes Auth configuré dans Vault
+  # Doit correspondre au rôle créé par terraform/vault_wrap_proxy.tf
+  role: "vault-wrap-proxy"
+
+  # Chemin du backend Kubernetes Auth, identique à Terraform
+  authMount: "kubernetes"
+  
+  # Namespace Vault (uniquement pour Vault Enterprise)
+  namespace: ""
+  
+  # TTL par défaut pour les wrapped tokens
+  # Doit être ≤ maxTtl
+  defaultTtl: "5m"
+  
+  # TTL maximum autorisé pour les wrapped tokens
+  # Le proxy refuse les requêtes avec un TTL supérieur
+  maxTtl: "24h"
+  
+  # Taille maximum des requêtes (bytes)
+  # Par défaut 1 MiB, cohérent avec les limites Vault
+  maxRequestSize: "1048576"
+  
+  # Timeout des appels Vault (secondes)
+  timeout: "10"
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  # Renseigner la classe du contrôleur maintenu utilisé dans votre cluster.
+  className: ""
+  annotations: {}
+  hosts:
+    - host: secrets.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: vault-wrap-proxy-tls
+    #   hosts:
+    #     - secrets.example.com
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# Security context restrictif
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

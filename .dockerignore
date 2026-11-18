@@ -1,0 +1,10 @@
+# Send only runtime inputs to the builder; keep local deployment files outside.
+**
+!Dockerfile
+!requirements.txt
+!app/
+!app/*.py
+!app/static/
+!app/static/**
+app/**/__pycache__/
+app/**/*.py[cod]

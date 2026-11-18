@@ -1,0 +1,33 @@
+= Vault Wrap Proxy
+
+Interface web et API de partage de secrets à usage unique, adossées au response wrapping de Vault.
+
+== Fonctionnement
+
+L'émetteur fournit un objet JSON. Le proxy appelle `sys/wrapping/wrap` et retourne le token. Le destinataire peut inspecter ce token sans le consommer, puis récupérer le contenu une seule fois via `sys/wrapping/unwrap`.
+
+Les utilisateurs n'ont pas besoin de compte Vault. La possession du token autorise la récupération. Le proxy voit les données en clair pendant le transit, sans les persister. Vault stocke la réponse et applique l'expiration et l'usage unique. Le service est destiné à un réseau contrôlé ou à un accès protégé par la passerelle de déploiement.
+
+== Protections et disponibilité
+
+* `MAX_WRAP_TTL` est appliqué côté serveur ; les durées sont normalisées en secondes.
+* `MAX_REQUEST_SIZE` limite les octets effectivement reçus, avec ou sans `Content-Length`.
+* L'interface construit les champs avec les propriétés DOM et charge les limites depuis `/api/config`.
+* Les appels Vault synchrones s'exécutent hors de la boucle d'événements, avec un client HTTP par thread.
+* Les tokens de service issus de Kubernetes Auth sont renouvelés par réauthentification avant leur échéance connue.
+* Un unwrap n'est pas rejoué automatiquement après une erreur réseau ambiguë.
+* `/health` indique que le processus fonctionne ; `/ready` vérifie l'accès authentifié à Vault et retourne 503 si nécessaire.
+* Le rate limiting dépend de l'infrastructure ; une limite locale par instance n'est pas un quota distribué.
+
+== Configuration et documentation de référence
+
+Le link:../README.md[README] présente le démarrage rapide. Les guides détaillés sont organisés par besoin :
+
+* link:usage.md[Utiliser l'interface et l'API]
+* link:deployment.md[Déployer avec un Vault existant]
+* link:configuration.md[Configurer l'application]
+* link:development.md[Développer et lancer les tests]
+* link:validation.md[Consulter les vérifications et leurs limites]
+
+* https://developer.hashicorp.com/vault/docs/concepts/response-wrapping[Vault response wrapping]
+* https://developer.hashicorp.com/vault/api-docs/system/wrapping-unwrap[API unwrap]

@@ -1,0 +1,13 @@
+{
+  "name": "vault-wrap-proxy-ui-tests",
+  "private": true,
+  "engines": {
+    "node": "^26.13.1"
+  },
+  "scripts": {
+    "test": "node --test tests/ui.test.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "31.0.1"
+  }
+}

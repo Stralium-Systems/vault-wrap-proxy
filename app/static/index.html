@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+<html lang="__APP_LANGUAGE__">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>__APP_TITLE__</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eaeaea;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #ffd369;
+            border-bottom: 2px solid #ffd369;
+            padding-bottom: 10px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            color: #888;
+            margin-top: -10px;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+        .card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid #0f3460;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #ffd369;
+            font-size: 1.3em;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #eaeaea;
+        }
+        .label-hint {
+            font-weight: normal;
+            color: #888;
+            font-size: 0.9em;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            background: #0f0f23;
+            color: #00ff88;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #ffd369;
+            box-shadow: 0 0 0 2px rgba(255, 211, 105, 0.2);
+        }
+        .primary-btn {
+            background: #ffd369;
+            color: #1a1a2e;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .primary-btn:hover {
+            background: #ffe085;
+            transform: translateY(-1px);
+        }
+        .primary-btn:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .result.success {
+            background: #0d3320;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+        }
+        .result.error {
+            background: #3d1515;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+        .hidden {
+            display: none;
+        }
+        .ttl-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .ttl-group select {
+            padding: 10px 15px;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            background: #0f0f23;
+            color: #00ff88;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .ttl-group select:focus {
+            outline: none;
+            border-color: #ffd369;
+        }
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            background: #0f3460;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #b8b8b8;
+            transition: all 0.2s;
+        }
+        .tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .tab.active {
+            background: #16213e;
+            color: #ffd369;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .info {
+            background: #0f3460;
+            border-left: 4px solid #ffd369;
+            border-radius: 0 8px 8px 0;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #c8d8e8;
+        }
+        .warning {
+            background: #3d2815;
+            border-left: 4px solid #ff9f43;
+            border-radius: 0 8px 8px 0;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #ffd8a8;
+        }
+        .steps {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .step {
+            flex: 1;
+            min-width: 150px;
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .step-number {
+            background: #ffd369;
+            color: #1a1a2e;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .step-text {
+            font-size: 13px;
+            color: #b8b8b8;
+        }
+        .copy-btn {
+            background: #0f3460;
+            border: 1px solid #1a5a9a;
+            color: #8ac4ff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #1a5a9a;
+        }
+        .token-display {
+            background: #0f0f23;
+            border: 1px solid #00ff88;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin: 8px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 13px;
+            color: #00ff88;
+        }
+
+        /* Champs clé-valeur */
+        .kv-container {
+            margin-bottom: 20px;
+        }
+        .kv-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .kv-row input {
+            margin-bottom: 0;
+        }
+        .kv-key {
+            flex: 1;
+            max-width: 200px;
+        }
+        .kv-value-wrapper {
+            flex: 2;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .kv-value {
+            flex: 1;
+            padding-right: 40px;
+        }
+        .toggle-visibility {
+            position: absolute;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: #8ac4ff;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        .toggle-visibility:hover {
+            opacity: 1;
+        }
+        .kv-remove {
+            background: #3d1515;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .kv-remove:hover {
+            background: #5d2525;
+        }
+        .add-field-btn {
+            background: #0f3460;
+            border: 1px dashed #1a5a9a;
+            color: #8ac4ff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .add-field-btn:hover {
+            background: #1a4a7a;
+            border-style: solid;
+        }
+
+        /* Mode toggle */
+        .mode-toggle {
+            display: flex;
+            background: #0f3460;
+            border-radius: 6px;
+            padding: 3px;
+        }
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: #8ac4ff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .mode-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .mode-btn.active {
+            background: #ffd369;
+            color: #1a1a2e;
+            font-weight: 500;
+        }
+
+        /* JSON textarea */
+        #json-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            background: #0f0f23;
+            color: #00ff88;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+        #json-input:focus {
+            outline: none;
+            border-color: #ffd369;
+        }
+
+        /* Affichage des données révélées */
+        .revealed-data {
+            margin-top: 10px;
+            display: grid;
+            gap: 6px;
+        }
+        .revealed-item {
+            background: #0f0f23;
+            border: 1px solid #0f3460;
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .revealed-key {
+            color: #8ac4ff;
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 120px;
+            flex-shrink: 0;
+        }
+        .revealed-value {
+            color: #00ff88;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .site-footer {
+            margin-top: 28px;
+            padding: 18px 12px;
+            border-top: 1px solid #0f3460;
+            color: #a7b2c5;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .footer-brand { margin-bottom: 10px; }
+        .footer-brand strong { color: #ffd369; }
+        .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 18px; }
+        .footer-links a { color: #a7b2c5; text-decoration: none; }
+        .footer-links a:hover, .footer-links a:focus-visible { color: #ffd369; text-decoration: underline; }
+        .footer-domain { color: #ffd369; }
+    </style>
+</head>
+<body>
+    <h1><span data-i18n="page_title">🔐 Secure Secret Sharing</span></h1>
+    <p class="subtitle"><span data-i18n="subtitle">Share confidential information securely</span></p>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab(&#x27;wrap&#x27;)" data-tab="wrap"><span data-i18n="tab_wrap">🔒 Protect</span></button>
+        <button class="tab" onclick="showTab(&#x27;unwrap&#x27;)" data-tab="unwrap"><span data-i18n="tab_unwrap">🔓 Reveal</span></button>
+        <button class="tab" onclick="showTab(&#x27;lookup&#x27;)" data-tab="lookup"><span data-i18n="tab_lookup">🔍 Check</span></button>
+    </div>
+
+    <!-- WRAP TAB -->
+    <div id="wrap-tab" class="tab-content active">
+        <div class="card">
+            <h2><span data-i18n="wrap_title">🔒 Protect sensitive information</span></h2>
+
+            <div class="info">
+                <strong><span data-i18n="how_it_works">💡 How does it work?</span></strong><br>
+                <span data-i18n="wrap_intro">Your information will be protected with a one-time code. Send the code to your recipient: they can use it once to reveal the information.</span>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text"><span data-i18n="step_enter">Enter your information</span></div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text"><span data-i18n="step_generate">Click Generate</span></div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text"><span data-i18n="step_send">Send the code</span></div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="margin-bottom: 0;"><span data-i18n="information_label">Information to protect</span></label>
+                <div class="mode-toggle">
+                    <button type="button" class="mode-btn active" id="mode-kv-btn" onclick="setInputMode(&#x27;kv&#x27;)"><span data-i18n="fields">Fields</span></button>
+                    <button type="button" class="mode-btn" id="mode-json-btn" onclick="setInputMode(&#x27;json&#x27;)">JSON</button>
+                </div>
+            </div>
+
+            <!-- Mode KV -->
+            <div id="kv-mode">
+                <div class="kv-container" id="kv-fields">
+                    <div class="kv-row">
+                        <input type="text" class="kv-key" placeholder="Field name (e.g. Username)" value="Username" data-i18n-placeholder="username_placeholder" data-i18n-value="default_username">
+                        <div class="kv-value-wrapper">
+                            <input type="password" class="kv-value" placeholder="Value" data-i18n-placeholder="field_value">
+                            <button type="button" class="toggle-visibility" onclick="toggleVisibility(this)" title="Show/Hide" data-i18n-title="toggle_visibility">👁</button>
+                        </div>
+                        <button class="kv-remove" onclick="removeField(this)" title="Remove" data-i18n-title="remove_field">×</button>
+                    </div>
+                    <div class="kv-row">
+                        <input type="text" class="kv-key" placeholder="Field name (e.g. Password)" value="Password" data-i18n-placeholder="password_placeholder" data-i18n-value="default_password">
+                        <div class="kv-value-wrapper">
+                            <input type="password" class="kv-value" placeholder="Secret value" data-i18n-placeholder="secret_value">
+                            <button type="button" class="toggle-visibility" onclick="toggleVisibility(this)" title="Show/Hide" data-i18n-title="toggle_visibility">👁</button>
+                        </div>
+                        <button class="kv-remove" onclick="removeField(this)" title="Remove" data-i18n-title="remove_field">×</button>
+                    </div>
+                </div>
+                <button class="add-field-btn" onclick="addField()"><span data-i18n="add_field">+ Add a field</span></button>
+            </div>
+
+            <!-- Mode JSON -->
+            <div id="json-mode" style="display: none;">
+                <textarea id="json-input" placeholder="{&quot;key&quot;: &quot;value&quot;, &quot;other_key&quot;: &quot;other value&quot;}" data-i18n-placeholder="json_placeholder"></textarea>
+            </div>
+
+            <label><span data-i18n="lifetime_label">Code lifetime</span></label>
+            <div class="ttl-group">
+                <select id="wrap-ttl" disabled></select>
+            </div>
+
+            <button id="wrap-submit" class="primary-btn" onclick="wrapData()" disabled>
+                <span data-i18n="generate_code">🔒 Generate secret code</span>
+            </button>
+
+            <div id="wrap-result" class="result hidden"></div>
+        </div>
+    </div>
+
+    <!-- UNWRAP TAB -->
+    <div id="unwrap-tab" class="tab-content">
+        <div class="card">
+            <h2><span data-i18n="unwrap_title">🔓 Reveal protected information</span></h2>
+
+            <div class="info">
+                <strong>💡</strong> <span data-i18n="unwrap_intro">Paste the secret code you received to reveal its information.</span>
+            </div>
+
+            <div class="warning">
+                <strong><span data-i18n="warning_label">⚠️ Please note:</span></strong> <span data-i18n="once_prefix">The code can be used </span><strong><span data-i18n="once">once</span></strong><span data-i18n="once_suffix">. Once revealed, the information can no longer be retrieved with this code.</span>
+            </div>
+
+            <label for="unwrap-token"><span data-i18n="received_code">Received secret code</span></label>
+            <input type="text" id="unwrap-token" placeholder="Paste the code here" data-i18n-placeholder="token_placeholder">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button class="primary-btn" onclick="unwrapToken()">
+                    <span data-i18n="reveal_information">🔓 Reveal information</span>
+                </button>
+                <div class="mode-toggle">
+                    <button type="button" class="mode-btn active" id="unwrap-mode-kv-btn" onclick="setUnwrapMode(&#x27;kv&#x27;)"><span data-i18n="fields">Fields</span></button>
+                    <button type="button" class="mode-btn" id="unwrap-mode-json-btn" onclick="setUnwrapMode(&#x27;json&#x27;)">JSON</button>
+                </div>
+            </div>
+
+            <div id="unwrap-result" class="result hidden"></div>
+        </div>
+    </div>
+
+    <!-- LOOKUP TAB -->
+    <div id="lookup-tab" class="tab-content">
+        <div class="card">
+            <h2><span data-i18n="lookup_title">🔍 Check a secret code</span></h2>
+
+            <div class="info">
+                <strong>💡</strong> <span data-i18n="lookup_intro">Check whether a code is still valid and how long remains before it expires.</span>
+                <br><strong><span data-i18n="lookup_notice">This check does not consume the code.</span></strong>
+            </div>
+
+            <label for="lookup-token"><span data-i18n="code_to_check">Secret code to check</span></label>
+            <input type="text" id="lookup-token" placeholder="Paste the code here" data-i18n-placeholder="token_placeholder">
+
+            <button class="primary-btn" onclick="lookupToken()">
+                <span data-i18n="check_code">🔍 Check the code</span>
+            </button>
+
+            <div id="lookup-result" class="result hidden"></div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-brand"><span data-i18n="footer_by">A project by</span> <strong>Stralium Systems</strong></div>
+        <div class="footer-links">
+            <a href="https://stralium-system.fr" target="_blank" rel="noopener noreferrer" title="Visit the Stralium Systems website" data-i18n-title="footer_website_title">
+                <span data-i18n="footer_website">Website</span> · <span class="footer-domain">stralium-system.fr</span> <span aria-hidden="true">↗</span>
+            </a>
+            <a href="https://github.com/Stralium-Systems/vault-wrap-proxy" target="_blank" rel="noopener noreferrer" title="View the project on GitHub" data-i18n-title="footer_source_title">
+                <span data-i18n="footer_source">Source code on GitHub</span> <span aria-hidden="true">↗</span>
+            </a>
+        </div>
+    </footer>
+
+    <script id="app-translations" type="application/json">__APP_TRANSLATIONS__</script>
+    <script>
+        const LANGUAGE = document.documentElement.lang;
+        const messages = JSON.parse(document.getElementById('app-translations').textContent);
+        const pluralRules = new Intl.PluralRules(LANGUAGE);
+        const numberFormat = new Intl.NumberFormat(LANGUAGE);
+        const dateFormat = new Intl.DateTimeFormat(LANGUAGE, {dateStyle: 'medium', timeStyle: 'medium'});
+        let inputMode = 'kv';
+        let unwrapDisplayMode = 'kv';
+        let lastUnwrapData = null;
+
+        function t(key, values = {}) {
+            if (!Object.prototype.hasOwnProperty.call(messages, key)) {
+                throw new Error('Missing translation: ' + key);
+            }
+            return messages[key].replace(/\{(\w+)\}/g, (match, name) =>
+                Object.prototype.hasOwnProperty.call(values, name) ? String(values[name]) : match);
+        }
+
+        function applyTranslations() {
+            document.title = t('site_title');
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                element.textContent = t(element.getAttribute('data-i18n'));
+            });
+            for (const attribute of ['title', 'placeholder', 'value']) {
+                document.querySelectorAll('[data-i18n-' + attribute + ']').forEach(element => {
+                    const text = t(element.getAttribute('data-i18n-' + attribute));
+                    if (attribute === 'value') element.value = text;
+                    else element.setAttribute(attribute, text);
+                });
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(element => element.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            document.querySelector('.tab[data-tab="' + tabName + '"]').classList.add('active');
+        }
+
+        function setUnwrapMode(mode) {
+            unwrapDisplayMode = mode;
+            document.getElementById('unwrap-mode-kv-btn').classList.toggle('active', mode === 'kv');
+            document.getElementById('unwrap-mode-json-btn').classList.toggle('active', mode === 'json');
+            if (lastUnwrapData) renderUnwrapResult(lastUnwrapData);
+        }
+
+        function renderUnwrapResult(data) {
+            const result = document.getElementById('unwrap-result');
+            const content = unwrapDisplayMode === 'json'
+                ? '<pre style="white-space: pre-wrap; overflow-wrap: anywhere;">' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>'
+                : renderRevealedData(data);
+            result.className = 'result success';
+            result.innerHTML = '<strong>' + escapeHtml(t('reveal_success')) + '</strong>' + content
+                + '<p style="color: #ffd8a8;">' + escapeHtml(t('code_consumed')) + '</p>';
+            result.classList.remove('hidden');
+        }
+
+        function setInputMode(mode) {
+            if (mode === 'json' && inputMode === 'kv') {
+                const data = getKvData();
+                if (Object.keys(data).length > 0) document.getElementById('json-input').value = JSON.stringify(data, null, 2);
+            } else if (mode === 'kv' && inputMode === 'json') {
+                const value = document.getElementById('json-input').value.trim();
+                if (value) {
+                    try {
+                        const data = JSON.parse(value);
+                        if (data && typeof data === 'object' && !Array.isArray(data)) setKvData(data);
+                    } catch {
+                        // Keep the original JSON so the user can correct it.
+                    }
+                }
+            }
+            inputMode = mode;
+            document.getElementById('kv-mode').style.display = mode === 'kv' ? 'block' : 'none';
+            document.getElementById('json-mode').style.display = mode === 'json' ? 'block' : 'none';
+            document.getElementById('mode-kv-btn').classList.toggle('active', mode === 'kv');
+            document.getElementById('mode-json-btn').classList.toggle('active', mode === 'json');
+        }
+
+        function getKvData() {
+            const data = Object.create(null);
+            document.querySelectorAll('.kv-row').forEach(row => {
+                const key = row.querySelector('.kv-key').value.trim();
+                if (key) data[key] = row.querySelector('.kv-value').value;
+            });
+            return data;
+        }
+
+        function createField(key = '', value = '') {
+            const row = document.createElement('div');
+            row.className = 'kv-row';
+            const keyInput = document.createElement('input');
+            keyInput.type = 'text';
+            keyInput.className = 'kv-key';
+            keyInput.placeholder = t('field_name');
+            keyInput.value = key;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'kv-value-wrapper';
+            const valueInput = document.createElement('input');
+            valueInput.type = 'password';
+            valueInput.className = 'kv-value';
+            valueInput.placeholder = t('field_value');
+            valueInput.value = String(value);
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'toggle-visibility';
+            toggle.title = t('toggle_visibility');
+            toggle.textContent = '👁';
+            toggle.addEventListener('click', () => toggleVisibility(toggle));
+            wrapper.append(valueInput, toggle);
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'kv-remove';
+            remove.title = t('remove_field');
+            remove.textContent = '×';
+            remove.addEventListener('click', () => removeField(remove));
+            row.append(keyInput, wrapper, remove);
+            return row;
+        }
+
+        function setKvData(data) {
+            const container = document.getElementById('kv-fields');
+            container.replaceChildren();
+            for (const [key, value] of Object.entries(data)) container.appendChild(createField(key, value));
+            if (!Object.keys(data).length) addField();
+        }
+
+        function addField() {
+            document.getElementById('kv-fields').appendChild(createField());
+        }
+
+        function removeField(button) {
+            if (document.querySelectorAll('.kv-row').length > 1) button.parentElement.remove();
+        }
+
+        function toggleVisibility(button) {
+            const input = button.previousElementSibling;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            button.textContent = input.type === 'password' ? '👁' : '🙈';
+        }
+
+        function getFieldsData() {
+            if (inputMode === 'json') {
+                const value = document.getElementById('json-input').value.trim();
+                return value ? JSON.parse(value) : null;
+            }
+            const data = getKvData();
+            return Object.keys(data).length > 0 ? data : null;
+        }
+
+        function formatDuration(seconds) {
+            if (!Number.isFinite(seconds)) return t('unknown_date');
+            seconds = Math.max(0, Math.floor(seconds));
+            let unit = 'second';
+            let count = seconds;
+            if (seconds >= 86400) { unit = 'day'; count = Math.floor(seconds / 86400); }
+            else if (seconds >= 3600) { unit = 'hour'; count = Math.floor(seconds / 3600); }
+            else if (seconds >= 60) { unit = 'minute'; count = Math.floor(seconds / 60); }
+            const plural = pluralRules.select(count) === 'one' ? 'one' : 'other';
+            return t('duration_' + unit + '_' + plural, {count: numberFormat.format(count)});
+        }
+
+        function formatDate(value) {
+            const date = value ? new Date(value) : null;
+            return date && !Number.isNaN(date.getTime()) ? dateFormat.format(date) : t('unknown_date');
+        }
+
+        function renderRevealedData(data) {
+            let html = '<div class="revealed-data">';
+            for (const [key, value] of Object.entries(data)) {
+                html += '<div class="revealed-item"><span class="revealed-key">' + escapeHtml(key)
+                    + '</span><span class="revealed-value">' + escapeHtml(value) + '</span></div>';
+            }
+            return html + '</div>';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(element, text) {
+            element.className = 'result error';
+            element.textContent = text;
+            element.classList.remove('hidden');
+        }
+
+        function apiError(result, status) {
+            if (status === 422) return t('invalid_request');
+            return typeof result.detail === 'string' ? result.detail : t('request_failed');
+        }
+
+        async function wrapData() {
+            const result = document.getElementById('wrap-result');
+            let data;
+            try { data = getFieldsData(); }
+            catch { showError(result, t('invalid_json')); return; }
+            if (!data || Object.keys(data).length === 0) { showError(result, t('empty_fields')); return; }
+            if (typeof data !== 'object' || Array.isArray(data)) {
+                showError(result, t('error_prefix') + t('invalid_request')); return;
+            }
+            try {
+                const response = await fetch('/api/wrap', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({data, ttl: document.getElementById('wrap-ttl').value})
+                });
+                const payload = await response.json();
+                if (!response.ok) { showError(result, t('error_prefix') + apiError(payload, response.status)); return; }
+                result.className = 'result success';
+                result.innerHTML = '<strong>' + escapeHtml(t('wrap_success')) + '</strong>'
+                    + '<p><strong>' + escapeHtml(t('your_code')) + '</strong></p>'
+                    + '<div class="token-display" id="token-to-copy">' + escapeHtml(payload.token) + '</div>'
+                    + '<button class="copy-btn" onclick="copyToken()">' + escapeHtml(t('copy_code')) + '</button>'
+                    + '<p>⏱️ <strong>' + escapeHtml(t('validity')) + '</strong> ' + escapeHtml(formatDuration(payload.ttl)) + '</p>'
+                    + '<div class="warning"><strong>' + escapeHtml(t('send_notice')) + '</strong>'
+                    + ['bearer_notice', 'recipient_notice', 'private_notice', 'single_use_notice']
+                        .map(key => '<p>' + escapeHtml(t(key)) + '</p>').join('') + '</div>';
+                result.classList.remove('hidden');
+            } catch { showError(result, t('network_error')); }
+        }
+
+        async function copyToken() {
+            const button = document.querySelector('.copy-btn');
+            try {
+                await navigator.clipboard.writeText(document.getElementById('token-to-copy').textContent);
+                button.textContent = t('copied');
+            } catch { button.textContent = t('copy_failed'); }
+            setTimeout(() => { button.textContent = t('copy_code'); }, 2000);
+        }
+
+        async function unwrapToken() {
+            const result = document.getElementById('unwrap-result');
+            const token = document.getElementById('unwrap-token').value.trim();
+            if (!token) { showError(result, t('paste_code')); return; }
+            try {
+                const response = await fetch('/api/unwrap', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token})
+                });
+                const payload = await response.json();
+                if (response.ok) {
+                    lastUnwrapData = payload.data;
+                    renderUnwrapResult(payload.data);
+                } else {
+                    lastUnwrapData = null;
+                    showError(result, response.status === 400 ? t('invalid_code') : t('error_prefix') + apiError(payload, response.status));
+                }
+            } catch { lastUnwrapData = null; showError(result, t('network_error')); }
+        }
+
+        async function lookupToken() {
+            const result = document.getElementById('lookup-result');
+            const token = document.getElementById('lookup-token').value.trim();
+            if (!token) { showError(result, t('paste_code')); return; }
+            try {
+                const response = await fetch('/api/lookup', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({token})
+                });
+                const payload = await response.json();
+                if (response.ok) {
+                    result.className = 'result success';
+                    result.textContent = t('valid_code', {remaining: formatDuration(payload.ttl), created: formatDate(payload.creation_time)});
+                    result.classList.remove('hidden');
+                } else showError(result, response.status === 400 ? t('invalid_code') : t('error_prefix') + apiError(payload, response.status));
+            } catch { showError(result, t('network_error')); }
+        }
+
+        async function loadConfiguration() {
+            const select = document.getElementById('wrap-ttl');
+            const button = document.getElementById('wrap-submit');
+            select.disabled = true;
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/config');
+                if (!response.ok) throw new Error('Configuration unavailable');
+                const config = await response.json();
+                const maximum = config.max_wrap_ttl_seconds;
+                const preferred = config.default_wrap_ttl_seconds;
+                if (config.language !== LANGUAGE || !Number.isInteger(maximum) || !Number.isInteger(preferred)
+                    || preferred <= 0 || maximum < preferred) throw new Error('Invalid configuration');
+                const durations = [...new Set([300, 900, 3600, 21600, 86400, preferred, maximum])]
+                    .filter(seconds => seconds > 0 && seconds <= maximum).sort((a, b) => a - b);
+                select.replaceChildren();
+                for (const seconds of durations) {
+                    const option = document.createElement('option');
+                    option.value = seconds + 's';
+                    option.textContent = formatDuration(seconds);
+                    select.appendChild(option);
+                }
+                select.value = preferred + 's';
+                select.disabled = false;
+                button.disabled = false;
+            } catch { showError(document.getElementById('wrap-result'), t('config_failed')); }
+        }
+
+        applyTranslations();
+        const configurationReady = loadConfiguration();
+    </script>
+</body>
+</html>

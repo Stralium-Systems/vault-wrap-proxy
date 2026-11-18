@@ -1,0 +1,40 @@
+# Disposable local demonstration. Never use these dev credentials in production.
+services:
+  vault:
+    image: hashicorp/vault:2.2.2@sha256:dfa48c2fa2b0099ccb47681ec5c4804bf5aec9d6879ecfee07ad4b92a5427ad6
+    command: server -dev -dev-root-token-id=root
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - "127.0.0.1:8200:8200"
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  proxy:
+    build: .
+    image: vault-wrap-proxy:1.0.0
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      APP_LANGUAGE: ${APP_LANGUAGE:-en}
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: root
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/ready', timeout=2)"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: vault-wrap-proxy
+description: Proxy pour les opérations wrap/unwrap Vault
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

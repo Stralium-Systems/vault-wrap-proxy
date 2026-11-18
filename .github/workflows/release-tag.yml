@@ -1,0 +1,97 @@
+name: Create release tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, for example v1.0.0'
+        required: true
+        type: string
+      commit:
+        description: 'Full commit SHA with a successful Tests workflow on main'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      TARGET_COMMIT: ${{ inputs.commit }}
+    steps:
+      - name: Validate the version and CI, then create the tag
+        shell: python
+        run: |
+          import base64
+          import json
+          import os
+          import re
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          tag = os.environ["RELEASE_TAG"]
+          target = os.environ["TARGET_COMMIT"].lower()
+          repo = os.environ["GITHUB_REPOSITORY"]
+          if not re.fullmatch(r"v\d+\.\d+\.\d+", tag):
+              raise SystemExit("Use a release tag in the form vMAJOR.MINOR.PATCH")
+          if not re.fullmatch(r"[0-9a-f]{40}", target):
+              raise SystemExit("A full, immutable commit SHA is required")
+
+          def api(path, data=None):
+              request = Request(
+                  f"{os.environ['GITHUB_API_URL']}/repos/{repo}/{path}",
+                  data=None if data is None else json.dumps(data).encode(),
+                  headers={
+                      "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                      "Accept": "application/vnd.github+json",
+                      "Content-Type": "application/json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                  },
+              )
+              with urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          comparison = api(f"compare/{target}...main")
+          if comparison["status"] not in ("ahead", "identical"):
+              raise SystemExit("The target commit must belong to main's history")
+
+          chart = api(f"contents/helm/vault-wrap-proxy/Chart.yaml?ref={target}")
+          content = base64.b64decode(chart["content"]).decode()
+          version = re.search(r'^appVersion:\s*[\"\']?([^\s\"\']+)', content, re.M)
+          if version is None or version.group(1) != tag[1:]:
+              raise SystemExit("The tag must match the chart's appVersion")
+
+          runs = api(
+              f"actions/workflows/test.yml/runs?head_sha={target}&event=push&per_page=1"
+          )["workflow_runs"]
+          if not runs or runs[0]["status"] != "completed" or runs[0]["conclusion"] != "success":
+              raise SystemExit("The latest Tests workflow for this commit must succeed")
+
+          try:
+              existing = api(f"git/ref/tags/{tag}")
+          except HTTPError as error:
+              if error.code != 404:
+                  raise
+              created = api("git/refs", {"ref": f"refs/tags/{tag}", "sha": target})
+              if created["object"]["sha"] != target:
+                  raise SystemExit("The created tag does not match the requested commit")
+              result = "Created"
+          else:
+              if existing["object"]["type"] != "commit" or existing["object"]["sha"] != target:
+                  raise SystemExit("The tag already exists with a different target; refusing to move it")
+              result = "Already present"
+
+          print(f"{result}: {tag} -> {target}")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+              summary.write(f"{result}: `{tag}` at `{target}`. Tests passed.\n")
