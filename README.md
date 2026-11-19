@@ -5,6 +5,10 @@
 
 Share a password or a JSON object with a code that expires and can be opened **once**. Vault Wrap Proxy provides a web interface and an API backed by HashiCorp Vault. Recipients do not need a Vault account.
 
+<p align="center">
+  <img src="docs/images/secure-secret-sharing.png" alt="Vault Wrap Proxy web interface for sharing fields or JSON with a one-time code" width="640">
+</p>
+
 ## Share a secret
 
 If your team already runs an instance, open its URL and use the three tabs:
