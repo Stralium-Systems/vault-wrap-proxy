@@ -1,7 +1,7 @@
 # Direct runtime dependencies. Regenerate requirements.txt after changes.
-fastapi==0.163.1
+fastapi==0.165.0
 uvicorn[standard]==0.54.0
-pydantic==2.14.3
+pydantic==2.14.4
 hvac==2.4.0
 # Imported directly by app.vault and app.main.
 requests==2.34.2
